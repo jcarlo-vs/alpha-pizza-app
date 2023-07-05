@@ -17,7 +17,7 @@ function CartOverview() {
      py-4 uppercase text-stone-200'
     >
       <p className='space-x-4 font-semibold text-stone-300 sm:space-x-6'>
-        <span>{totalCartQuantity}pizzas</span>
+        <span>{totalCartQuantity} pizzas</span>
         <span>{formatCurrency(totalCartPrice)}</span>
       </p>
       <Link to={'/cart'}>Open cart &rarr;</Link>

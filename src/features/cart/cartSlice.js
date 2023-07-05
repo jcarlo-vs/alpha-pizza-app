@@ -1,15 +1,7 @@
 import { createSlice, current } from '@reduxjs/toolkit'
 
 const initialState = {
-  cart: [
-    {
-      pizzaId: 12,
-      name: 'Mediterranean',
-      quantity: 2,
-      unitPrice: 16,
-      totalPrice: 32,
-    },
-  ],
+  cart: [],
 }
 
 const cartSlice = createSlice({
@@ -22,9 +14,7 @@ const cartSlice = createSlice({
       const includes = state.cart.some((item) => item.name === name)
       if (includes) {
         const item = state.cart.find((item) => item.name === name)
-        console.log(item)
         item.quantity++
-        console.log(current(state.cart))
         return
       }
 
@@ -32,7 +22,6 @@ const cartSlice = createSlice({
     },
     deleteItem(state, { payload }) {
       // payload = pizzaId
-      console.log(payload)
       state.cart = state.cart.filter((item) => item.pizzaId !== payload)
     },
     increaseItemQuantity(state, { payload }) {
@@ -42,8 +31,13 @@ const cartSlice = createSlice({
     },
     decreaseItemQuantity(state, { payload }) {
       const item = state.cart.find((item) => item.pizzaId === payload)
+
       item.quantity--
       item.total = item.quantity * item.unitPrice
+
+      if (item.quantity === 0) {
+        cartSlice.caseReducers.deleteItem(state, { payload })
+      }
     },
     clearCart(state) {
       state.cart = []
@@ -61,6 +55,10 @@ export const {
 
 export default cartSlice.reducer
 
+export const getCart = (state) => {
+  return state.cart.cart
+}
+
 export const getTotalCartQuantity = (state) => {
   const total = state.cart.cart.reduce((sum, item) => {
     sum += item.quantity
@@ -72,12 +70,15 @@ export const getTotalCartQuantity = (state) => {
 
 export const getTotalCartPrice = (state) => {
   const total = state.cart.cart.reduce((sum, item) => {
-    sum += item.totalPrice
+    sum += item.unitPrice * item.quantity
+
     return sum
   }, 0)
-
   return total
 }
 
-export const getCurrentQuantityById = (id) => (state) =>
-  state.cart.cart.find((item) => item.pizzaId === id)?.quantity ?? 0
+export const getCurrentQuantityById = (id) => {
+  return (state) => {
+    return state.cart.cart.find((item) => item.pizzaId === id)?.quantity ?? 0
+  }
+}
